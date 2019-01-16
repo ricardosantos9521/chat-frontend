@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: signalrclient-dpl
+spec:
+  replicas: 2
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: signalrclient
+  template:
+    metadata:
+       labels:
+         app: signalrclient
+    spec:
+      containers:
+      - name: nim
+        image: "ricardosantos9521/teamrics:signalrclient_BUILDNUMBER"
+        ports:
+        - containerPort: 5000
+        resources:
+          limits:
+            memory: "50Mi"
+            cpu: "100m"
+      imagePullSecrets:
+        - name: secretteamrics
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: signalrclient-svc
+spec:
+  selector:
+    app: signalrclient
+  ports:
+  - port: 5000
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: signalrclient-ing
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/add-base-url: "true"
+    nginx.ingress.kubernetes.io/ingress.allow-http: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /signalr/client
+        backend:
+          serviceName: signalrclient-svc
+          servicePort: 5000

@@ -1,0 +1,51 @@
+.grid-container {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  grid-template-rows: auto 1fr auto;      /*head messages bottom*/
+}
+
+.head{
+  padding: 5px;
+  border-bottom: 1px solid black;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.head .title{
+  grid-column: 2;
+  text-align: center;
+}
+
+.head .user{
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.messages{
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.bottom{
+  border-top: 1px solid black;
+}
+
+.bottom .formgrid{
+  display: grid;
+  margin: 0;
+  grid-template-columns: 1fr auto;
+}
+
+
+.bottom input[type="text"]{
+  width: calc(100% - 20px);
+  margin: 10px;
+}
+
+.bottom button[type="submit"]{
+  margin:10px;
+}
