@@ -1,8 +1,7 @@
-import React, { Component, FormEvent, ChangeEvent, Ref, RefObject } from 'react';
+import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
-import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, LogLevel } from '@aspnet/signalr';
 import Message, { IMessage } from '../Messages/Mensage';
-import { any } from 'prop-types';
 
 interface IProps {
 }
@@ -12,12 +11,15 @@ interface IState {
     user: string;
     message: string;
     messages: Array<IMessage>;
+    users: number;
 }
 
 class Chat extends Component<IProps, IState> {
 
     private connection: HubConnection;
     private messageLength = 0;
+
+    private users = 0;
 
     constructor(_props: any) {
         super(_props);
@@ -26,7 +28,8 @@ class Chat extends Component<IProps, IState> {
             disable: true,
             user: "",
             message: "",
-            messages: []
+            messages: [],
+            users: 0
         }
 
         this.connection = new HubConnectionBuilder()
@@ -45,6 +48,10 @@ class Chat extends Component<IProps, IState> {
             this.addMessage(user, message);
         });
 
+        this.connection.on("users", (number: number) => {
+            this.setState({users: number})
+        });
+
         this.connection.onclose(() => {
             this.setState({ disable: true });
         })
@@ -55,10 +62,6 @@ class Chat extends Component<IProps, IState> {
                     this.setState({ disable: false })
                     console.log("connected");
                 });
-    }
-
-    componentDidMount() {
-        console.log("mount");
     }
 
     componentDidUpdate() {
@@ -105,6 +108,9 @@ class Chat extends Component<IProps, IState> {
         return (
             <div className="grid-container">
                 <div className="head">
+                    <div className="countusers">
+                        {this.state.users}
+                    </div>
                     <div className="title">
                         <h1>ChatTest</h1>
                     </div>
