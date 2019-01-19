@@ -124,10 +124,10 @@ class Chat extends Component<IProps, IState> {
     render() {
         return (
             <div className="grid-container">
+                <div className="title">
+                    <h1>ChatTest</h1>
+                </div>
                 <div className="head">
-                    <div className="title">
-                        <h1>ChatTest</h1>
-                    </div>
                     <div className="countusers">
                         Users: {this.state.users}
                     </div>
