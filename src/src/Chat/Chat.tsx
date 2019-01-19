@@ -21,6 +21,9 @@ class Chat extends Component<IProps, IState> {
 
     private users = 0;
 
+    private userBefore: string = "";
+    private user: string = "";
+
     constructor(_props: any) {
         super(_props);
 
@@ -49,7 +52,7 @@ class Chat extends Component<IProps, IState> {
         });
 
         this.connection.on("users", (number: number) => {
-            this.setState({users: number})
+            this.setState({ users: number })
         });
 
         this.connection.onclose(() => {
@@ -104,15 +107,29 @@ class Chat extends Component<IProps, IState> {
         this.setState({ message: e.target.value });
     }
 
+    messages() {
+        this.userBefore = "";
+        this.user = "";
+        return (
+            this.state.messages.map((m, ikey) => {
+                this.userBefore = this.user;
+                this.user = m.user;
+                return (
+                    <Message message={m} key={ikey} userBefore={this.userBefore} />
+                );
+            })
+        );
+    }
+
     render() {
         return (
             <div className="grid-container">
                 <div className="head">
-                    <div className="countusers">
-                        {this.state.users}
-                    </div>
                     <div className="title">
                         <h1>ChatTest</h1>
+                    </div>
+                    <div className="countusers">
+                        Users: {this.state.users}
                     </div>
                     <div className="user">
                         <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" id="userinput" />
@@ -120,11 +137,7 @@ class Chat extends Component<IProps, IState> {
                 </div>
                 <div className="messages" id="messages">
                     {
-                        this.state.messages.map((message, ikey) => {
-                            return (
-                                <Message message={message} key={ikey} />
-                            );
-                        })
+                        this.messages()
                     }
                 </div>
                 <div className="bottom">

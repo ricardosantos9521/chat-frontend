@@ -13,25 +13,26 @@
   grid-template-columns: 1fr 1fr 1fr;
 }
 
-.head .countusers{
+.head .title{
   grid-column: 1;
+  text-align: center;
+}
+
+.head .countusers{
+  grid-column: 2;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   margin: 10px;
   padding: 20px;
 }
 
-.head .title{
-  grid-column: 2;
-  text-align: center;
-}
 
 .head .user{
   grid-column: 3;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .messages{

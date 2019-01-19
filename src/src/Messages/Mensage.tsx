@@ -15,6 +15,7 @@ export class IMessage {
 
 interface IProps {
     message: IMessage;
+    userBefore: String;
 }
 
 interface IState {
@@ -23,11 +24,23 @@ interface IState {
 
 class Message extends Component<IProps, IState> {
 
+    hideUserName(user: string): boolean {
+        if (this.props.userBefore == user) {
+            return true;
+        }
+
+        return false;
+    }
+
     render() {
         return (
-            <div className="message" style={(this.props.message.mymessage) ? { float: "right" } : { float: "left" }}>
-                <h3>{this.props.message.user}</h3>
-                {this.props.message.message}
+            <div className="boxmessage" style={(this.props.message.mymessage) ? { float: "right" } : { float: "left" }}>
+                <div className="usermessage" hidden={this.hideUserName(this.props.message.user)}>
+                    {this.props.message.user}
+                </div>
+                <div className="message">
+                    {this.props.message.message}
+                </div>
             </div>
         );
     }
