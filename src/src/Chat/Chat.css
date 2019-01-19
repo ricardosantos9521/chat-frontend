@@ -59,11 +59,14 @@
   display: grid;
   margin: 0;
   grid-template-columns: 1fr auto;
+  align-items: center;
+  justify-content: left;
 }
 
 
 .bottom input[type="text"]{
   width: calc(100% - 20px);
+  padding: 5px;
   margin: 10px;
 }
 
