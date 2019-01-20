@@ -1,6 +1,6 @@
-import React, { Component, FormEvent, ChangeEvent } from 'react';
+import React, { Component, FormEvent, ChangeEvent, MouseEvent } from 'react';
 import './Chat.css';
-import { HubConnectionBuilder, HubConnection, LogLevel } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, LogLevel, HubConnectionState } from '@aspnet/signalr';
 import Message, { IMessage } from '../Messages/Mensage';
 
 interface IProps {
@@ -24,6 +24,8 @@ class Chat extends Component<IProps, IState> {
     private userBefore: string = "";
     private user: string = "";
 
+    private triedReconnect: number = 0;
+
     constructor(_props: any) {
         super(_props);
 
@@ -39,14 +41,16 @@ class Chat extends Component<IProps, IState> {
             .withUrl("http://rics.synology.me/signalr/server/" + "/chat")
             .build();
 
+        this.initializeSignalR();
         this.connectSignalR();
 
         this.send = this.send.bind(this);
         this.updateUser = this.updateUser.bind(this);
         this.updateMessage = this.updateMessage.bind(this);
+        this.connectSignalR = this.connectSignalR.bind(this);
     }
 
-    connectSignalR() {
+    initializeSignalR() {
         this.connection.on("receive", (user: string, message: string) => {
             this.addMessage(user, message);
         });
@@ -57,14 +61,33 @@ class Chat extends Component<IProps, IState> {
 
         this.connection.onclose(() => {
             this.setState({ disable: true });
-        })
+            this.setState({ users: 0 });
+            this.addMessage("admin", "We are trying to reconnect!");
 
-        this.connection.start()
-            .then(
-                () => {
-                    this.setState({ disable: false })
-                    console.log("connected");
-                });
+            setTimeout(() => {
+                this.connectSignalR();
+            }, 15000);
+        });
+    }
+
+    connectSignalR(isInput: boolean = false) {
+        if (this.connection.state == HubConnectionState.Disconnected && (isInput || this.triedReconnect < 4)) {
+            this.triedReconnect++;
+            this.connection.start()
+                .then(
+                    () => {
+                        this.triedReconnect = 0;
+                        this.setState({ disable: false })
+                        console.log("connected");
+                    })
+                .catch(
+                    () => {
+                        setTimeout(() => {
+                            this.connectSignalR();
+                        }, 15000);
+                    }
+                );
+        }
     }
 
     componentDidUpdate() {
@@ -124,10 +147,15 @@ class Chat extends Component<IProps, IState> {
     render() {
         return (
             <div className="grid-container">
-                <div className="title">
-                    <h1>ChatTest</h1>
+                <div className="head1">
+                    <div className="title">
+                        <h1>ChatTest</h1>
+                    </div>
+                    <div className="containerstate" onClick={e => this.connectSignalR(true)}>
+                        <div className="hubstate" style={{ backgroundColor: (this.state.disable) ? "red" : "green" }} />
+                    </div>
                 </div>
-                <div className="head">
+                <div className="head2">
                     <div className="countusers">
                         Users: {this.state.users}
                     </div>
