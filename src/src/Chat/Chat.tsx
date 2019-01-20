@@ -33,6 +33,10 @@ class Chat extends Component<IProps, IState> {
 
         Notification.requestPermission();
 
+        window.onresize = ()=>{
+            this.scrollToEnd();
+        }
+
         this.state = {
             disable: true,
             user: "",
@@ -97,11 +101,15 @@ class Chat extends Component<IProps, IState> {
 
     componentDidUpdate() {
         if (this.state.messages.length > this.messageLength) {
-            var div = document.getElementById("messages") as HTMLDivElement;
-            (div.lastChild as HTMLDivElement).scrollIntoView();
+            this.scrollToEnd();
 
             this.messageLength = this.state.messages.length;
         }
+    }
+
+    scrollToEnd(){
+        var div = document.getElementById("messages") as HTMLDivElement;
+        (div.lastChild as HTMLDivElement).scrollIntoView();
     }
 
     sendNotification(user: string, message: string) {
