@@ -1,4 +1,4 @@
-import React, { Component, FormEvent, ChangeEvent, MouseEvent } from 'react';
+import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
 import { HubConnectionBuilder, HubConnection, LogLevel, HubConnectionState } from '@aspnet/signalr';
 import Message, { IMessage } from '../Messages/Mensage';
@@ -26,8 +26,12 @@ class Chat extends Component<IProps, IState> {
 
     private triedReconnect: number = 0;
 
+    private lastNotificationDate: number = 0;
+
     constructor(_props: any) {
         super(_props);
+
+        Notification.requestPermission();
 
         this.state = {
             disable: true,
@@ -38,7 +42,7 @@ class Chat extends Component<IProps, IState> {
         }
 
         this.connection = new HubConnectionBuilder()
-            .withUrl("http://rics.synology.me/signalr/server/" + "/chat")
+            .withUrl("http://rics.synology.me/signalr/server/chat")
             .build();
 
         this.initializeSignalR();
@@ -70,6 +74,7 @@ class Chat extends Component<IProps, IState> {
         });
     }
 
+
     connectSignalR(isInput: boolean = false) {
         if (this.connection.state == HubConnectionState.Disconnected && (isInput || this.triedReconnect < 4)) {
             this.triedReconnect++;
@@ -99,9 +104,20 @@ class Chat extends Component<IProps, IState> {
         }
     }
 
+    sendNotification(user: string, message: string) {
+        if (Notification.permission === "granted") {
+            if(document.hidden==true){
+                new Notification("New message in ChatTest!", { icon: 'favicon.ico', body: user + ": " + message});
+            }
+        }
+    }
+
     addMessage(user: string, message: string, mymessage = false) {
         this.setState({ messages: [...this.state.messages, new IMessage(user, message, mymessage)] });
         var div = document.getElementById("messages") as HTMLDivElement;
+        if (!mymessage) {
+            this.sendNotification(user, message);
+        }
     }
 
     sendmessage(user: string, message: string) {
@@ -160,7 +176,7 @@ class Chat extends Component<IProps, IState> {
                         Users: {this.state.users}
                     </div>
                     <div className="user">
-                        <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" id="userinput" />
+                        <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" />
                     </div>
                 </div>
                 <div className="messages" id="messages">
