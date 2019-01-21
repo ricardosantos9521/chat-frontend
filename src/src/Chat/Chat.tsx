@@ -47,7 +47,7 @@ class Chat extends Component<IProps, IState> {
         }
 
         this.connection = new HubConnectionBuilder()
-            .withUrl("/signalr/server/chat", {transport: HttpTransportType.ServerSentEvents})
+            .withUrl("/signalr/server/chat", {transport: HttpTransportType.LongPolling})
             .configureLogging(LogLevel.Trace)
             // .withHubProtocol(new MessagePackHubProtocol())
             .build();
