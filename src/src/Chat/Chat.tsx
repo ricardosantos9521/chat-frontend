@@ -47,9 +47,9 @@ class Chat extends Component<IProps, IState> {
         }
 
         this.connection = new HubConnectionBuilder()
-            .withUrl("https://rics.synology.me/signalr/server/chat")
+            .withUrl("/signalr/server/chat")
             .configureLogging(LogLevel.Trace)
-            .withHubProtocol(new MessagePackHubProtocol())
+            // .withHubProtocol(new MessagePackHubProtocol())
             .build();
 
         this.initializeSignalR();
