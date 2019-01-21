@@ -47,7 +47,7 @@ class Chat extends Component<IProps, IState> {
         }
 
         this.connection = new HubConnectionBuilder()
-            .withUrl("/signalr/server/chat", {transport: HttpTransportType.WebSockets})             //need to change header in inverse proxy on synology to support websockets
+            .withUrl("/signalr/server/chat", { transport: HttpTransportType.WebSockets })             //need to change header in inverse proxy on synology to support websockets
             .withHubProtocol(new MessagePackHubProtocol())
             .build();
 
@@ -111,7 +111,7 @@ class Chat extends Component<IProps, IState> {
 
     scrollToEnd() {
         var div = document.getElementById("messages") as HTMLDivElement;
-        (div.lastChild as HTMLDivElement).scrollIntoView();
+        if (div != undefined && div.lastChild != undefined) (div.lastChild as HTMLDivElement).scrollIntoView();
     }
 
     sendNotification(user: string, message: string) {
@@ -147,7 +147,7 @@ class Chat extends Component<IProps, IState> {
         else {
             alert("User cannot be empty!");
             var input = document.getElementById("userinput") as HTMLInputElement;
-            input.focus();
+            if (input != undefined) input.focus();
         }
     }
 
@@ -189,7 +189,7 @@ class Chat extends Component<IProps, IState> {
                         Users: {this.state.users}
                     </div>
                     <div className="user">
-                        <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" />
+                        <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" id="userinput" />
                     </div>
                 </div>
                 <div className="messages" id="messages">
