@@ -1,6 +1,7 @@
 import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
-import { HubConnectionBuilder, HubConnection, LogLevel, HubConnectionState } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, HubConnectionState } from '@aspnet/signalr';
+import { MessagePackHubProtocol } from '@aspnet/signalr-protocol-msgpack';
 import Message, { IMessage } from '../Messages/Mensage';
 
 interface IProps {
@@ -47,6 +48,7 @@ class Chat extends Component<IProps, IState> {
 
         this.connection = new HubConnectionBuilder()
             .withUrl("https://rics.synology.me/signalr/server/chat")
+            .withHubProtocol(new MessagePackHubProtocol())
             .build();
 
         this.initializeSignalR();
