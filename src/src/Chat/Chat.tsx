@@ -1,6 +1,6 @@
 import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
-import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel, HttpTransportType } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType } from '@aspnet/signalr';
 import { MessagePackHubProtocol } from '@aspnet/signalr-protocol-msgpack';
 import Message, { IMessage } from '../Messages/Mensage';
 
@@ -47,9 +47,8 @@ class Chat extends Component<IProps, IState> {
         }
 
         this.connection = new HubConnectionBuilder()
-            .withUrl("/signalr/server/chat", {transport: HttpTransportType.WebSockets})
-            .configureLogging(LogLevel.Trace)
-            // .withHubProtocol(new MessagePackHubProtocol())
+            .withUrl("/signalr/server/chat", {transport: HttpTransportType.WebSockets})             //need to change header in inverse proxy on synology to support websockets
+            .withHubProtocol(new MessagePackHubProtocol())
             .build();
 
         this.initializeSignalR();
