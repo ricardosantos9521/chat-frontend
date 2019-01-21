@@ -26,14 +26,14 @@ class Chat extends Component<IProps, IState> {
 
     private triedReconnect: number = 0;
 
-    private lastNotificationDate: number = 0;
+    private lastNotification: Notification | undefined = undefined;
 
     constructor(_props: any) {
         super(_props);
 
         Notification.requestPermission();
 
-        window.onresize = ()=>{
+        window.onresize = () => {
             this.scrollToEnd();
         }
 
@@ -107,15 +107,18 @@ class Chat extends Component<IProps, IState> {
         }
     }
 
-    scrollToEnd(){
+    scrollToEnd() {
         var div = document.getElementById("messages") as HTMLDivElement;
         (div.lastChild as HTMLDivElement).scrollIntoView();
     }
 
     sendNotification(user: string, message: string) {
         if (Notification.permission === "granted") {
-            if(document.hidden==true){
-                new Notification("New message in ChatTest!", { icon: 'favicon.ico', body: user + ": " + message});
+            if (document.hidden == true) {
+                if (this.lastNotification != undefined) {
+                    this.lastNotification.close();
+                }
+                this.lastNotification = new Notification("New message in ChatTest!", { icon: 'favicon.ico', body: user + ": " + message });
             }
         }
     }
