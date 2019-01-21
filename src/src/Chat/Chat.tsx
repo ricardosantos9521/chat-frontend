@@ -1,6 +1,6 @@
 import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
-import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel } from '@aspnet/signalr';
+import { HubConnectionBuilder, HubConnection, HubConnectionState, LogLevel, HttpTransportType } from '@aspnet/signalr';
 import { MessagePackHubProtocol } from '@aspnet/signalr-protocol-msgpack';
 import Message, { IMessage } from '../Messages/Mensage';
 
@@ -47,7 +47,7 @@ class Chat extends Component<IProps, IState> {
         }
 
         this.connection = new HubConnectionBuilder()
-            .withUrl("/signalr/server/chat")
+            .withUrl("/signalr/server/chat", {transport: HttpTransportType.ServerSentEvents})
             .configureLogging(LogLevel.Trace)
             // .withHubProtocol(new MessagePackHubProtocol())
             .build();
