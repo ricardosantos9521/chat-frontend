@@ -48,7 +48,7 @@ class Chat extends Component<IProps, IState> {
 
         this.connection = new HubConnectionBuilder()
             .withUrl("/signalr/server/chat", { transport: HttpTransportType.WebSockets })             //need to change header in inverse proxy on synology to support websockets
-            .withHubProtocol(new MessagePackHubProtocol())
+            // .withHubProtocol(new MessagePackHubProtocol())
             .build();
 
         this.initializeSignalR();
