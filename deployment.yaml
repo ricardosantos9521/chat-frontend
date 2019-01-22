@@ -41,7 +41,7 @@ metadata:
   name: signalrclient-ing
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/add-base-url: "true"
+    # nginx.ingress.kubernetes.io/add-base-url: "true"
     # nginx.ingress.kubernetes.io/ingress.allow-http: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
