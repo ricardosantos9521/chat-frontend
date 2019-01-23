@@ -3,6 +3,9 @@ import './Chat.css';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType } from '@aspnet/signalr';
 import { MessagePackHubProtocol } from '@aspnet/signalr-protocol-msgpack';
 import Message, { IMessage } from '../Messages/Mensage';
+import off from './notifications_off.png';
+import on from './notifications_on.png';
+import { request } from 'https';
 
 interface IProps {
 }
@@ -13,6 +16,7 @@ interface IState {
     message: string;
     messages: Array<IMessage>;
     users: number;
+    notificationsoff: boolean;
 }
 
 class Chat extends Component<IProps, IState> {
@@ -32,8 +36,6 @@ class Chat extends Component<IProps, IState> {
     constructor(_props: any) {
         super(_props);
 
-        Notification.requestPermission();
-
         window.onresize = () => {
             this.scrollToEnd();
         }
@@ -43,7 +45,8 @@ class Chat extends Component<IProps, IState> {
             user: "",
             message: "",
             messages: [],
-            users: 0
+            users: 0,
+            notificationsoff: (Notification.permission === "granted") ? false : true
         }
 
         this.connection = new HubConnectionBuilder()
@@ -58,6 +61,7 @@ class Chat extends Component<IProps, IState> {
         this.updateUser = this.updateUser.bind(this);
         this.updateMessage = this.updateMessage.bind(this);
         this.connectSignalR = this.connectSignalR.bind(this);
+        this.requestNotifications = this.requestNotifications.bind(this);
     }
 
     initializeSignalR() {
@@ -112,6 +116,17 @@ class Chat extends Component<IProps, IState> {
     scrollToEnd() {
         var div = document.getElementById("messages") as HTMLDivElement;
         if (div != undefined && div.lastChild != undefined) (div.lastChild as HTMLDivElement).scrollIntoView();
+    }
+
+    requestNotifications() {
+        Notification.requestPermission().then((permission) => {
+            if (permission == "granted") {
+                this.setState({ notificationsoff: false });
+            }
+            else if (permission == "denied") {
+                this.setState({ notificationsoff: true });
+            }
+        });
     }
 
     sendNotification(user: string, message: string) {
@@ -177,6 +192,9 @@ class Chat extends Component<IProps, IState> {
         return (
             <div className="grid-container">
                 <div className="head1">
+                    <div className="containerstate" onClick={this.requestNotifications}>
+                        <img src={(this.state.notificationsoff) ? off : on} id="notificationimage" />
+                    </div>
                     <div className="title">
                         <h1>ChatTest</h1>
                     </div>

@@ -21,8 +21,13 @@
   margin: 0;
 }
 
+#notificationimage{
+  width: auto;
+  height: calc(100% - 20px);
+  margin: 10px;
+}
+
 .head1 .containerstate{
-  grid-column: 3;
   text-align: center;
   display: grid;
   align-items: center;
