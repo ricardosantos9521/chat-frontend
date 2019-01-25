@@ -5,6 +5,10 @@ metadata:
 spec:
   replicas: 2
   revisionHistoryLimit: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 50%
+      maxSurge: 2
   selector:
     matchLabels:
       app: signalrclient
@@ -14,7 +18,7 @@ spec:
          app: signalrclient
     spec:
       containers:
-      - name: nim
+      - name: signalrclient
         image: "ricardosantos9521/teamrics:signalrclient_BUILDNUMBER"
         ports:
         - containerPort: 80
@@ -22,6 +26,13 @@ spec:
           limits:
             memory: "50Mi"
             cpu: "100m"
+        readinessProbe:
+          httpGet:
+             path: /
+             port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
       imagePullSecrets:
         - name: secretteamrics
 ---
