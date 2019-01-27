@@ -1,11 +1,9 @@
 import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType } from '@aspnet/signalr';
-import { MessagePackHubProtocol } from '@aspnet/signalr-protocol-msgpack';
 import Message, { IMessage } from '../Messages/Mensage';
 import off from './notifications_off.png';
 import on from './notifications_on.png';
-import { request } from 'https';
 
 interface IProps {
 }
@@ -135,7 +133,7 @@ class Chat extends Component<IProps, IState> {
                 if (this.lastNotification != undefined) {
                     this.lastNotification.close();
                 }
-                this.lastNotification = new Notification("New message in ChatTest!", { icon: 'favicon.ico', body: user + ": " + message });
+                this.lastNotification = new Notification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message });
             }
         }
     }
