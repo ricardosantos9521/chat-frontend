@@ -1,9 +1,10 @@
 import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
 import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType } from '@aspnet/signalr';
-import Message, { IMessage } from '../Messages/Mensage';
+import { IMessage } from '../Messages/Mensage';
 import off from './notifications_off.png';
 import on from './notifications_on.png';
+import Messages from '../Messages/Mensages';
 
 interface IProps {
 }
@@ -20,12 +21,6 @@ interface IState {
 class Chat extends Component<IProps, IState> {
 
     private connection: HubConnection;
-    private messageLength = 0;
-
-    private users = 0;
-
-    private userBefore: string = "";
-    private user: string = "";
 
     private triedReconnect: number = 0;
 
@@ -33,10 +28,6 @@ class Chat extends Component<IProps, IState> {
 
     constructor(_props: any) {
         super(_props);
-
-        window.onresize = () => {
-            this.scrollToEnd();
-        }
 
         this.state = {
             disable: true,
@@ -103,19 +94,6 @@ class Chat extends Component<IProps, IState> {
         }
     }
 
-    componentDidUpdate() {
-        if (this.state.messages.length > this.messageLength) {
-            this.scrollToEnd();
-
-            this.messageLength = this.state.messages.length;
-        }
-    }
-
-    scrollToEnd() {
-        var div = document.getElementById("messages") as HTMLDivElement;
-        if (div != undefined && div.lastChild != undefined) (div.lastChild as HTMLDivElement).scrollIntoView();
-    }
-
     requestNotifications() {
         Notification.requestPermission().then((permission) => {
             if (permission == "granted") {
@@ -172,20 +150,6 @@ class Chat extends Component<IProps, IState> {
         this.setState({ message: e.target.value });
     }
 
-    messages() {
-        this.userBefore = "";
-        this.user = "";
-        return (
-            this.state.messages.map((m, ikey) => {
-                this.userBefore = this.user;
-                this.user = m.user;
-                return (
-                    <Message message={m} key={ikey} userBefore={this.userBefore} />
-                );
-            })
-        );
-    }
-
     render() {
         return (
             <div className="grid-container">
@@ -208,11 +172,7 @@ class Chat extends Component<IProps, IState> {
                         <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" id="userinput" />
                     </div>
                 </div>
-                <div className="messages" id="messages">
-                    {
-                        this.messages()
-                    }
-                </div>
+                <Messages messages={this.state.messages}/>
                 <div className="bottom">
                     <form onSubmit={e => this.send(e)}>
                         <div className="formgrid">

@@ -1,0 +1,4 @@
+.messages{
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
