@@ -5,6 +5,7 @@ import { IMessage } from '../Messages/Mensage';
 import off from './notifications_off.png';
 import on from './notifications_on.png';
 import Messages from '../Messages/Mensages';
+import SignalRService from '../SignalR/SignalRService';
 
 interface IProps {
 }
@@ -20,10 +21,6 @@ interface IState {
 
 class Chat extends Component<IProps, IState> {
 
-    private connection: HubConnection;
-
-    private triedReconnect: number = 0;
-
     private lastNotification: Notification | undefined = undefined;
 
     constructor(_props: any) {
@@ -38,60 +35,26 @@ class Chat extends Component<IProps, IState> {
             notificationsoff: (Notification.permission === "granted") ? false : true
         }
 
-        this.connection = new HubConnectionBuilder()
-            .withUrl("/signalr/server/chat", { transport: HttpTransportType.WebSockets })             //need to change header in inverse proxy on synology to support websockets
-            // .withHubProtocol(new MessagePackHubProtocol())
-            .build();
-
-        this.initializeSignalR();
-        this.connectSignalR();
+        SignalRService.registerOnConnected(this.onConnectionConnected.bind(this));
+        SignalRService.registerMessageReceived(this.addMessage.bind(this));
+        SignalRService.registerUsersChange((numberUsers: number) => {
+            this.setState({ users: numberUsers })
+        });
+        SignalRService.registerOnClose(this.onCloseConnection.bind(this));
 
         this.send = this.send.bind(this);
         this.updateUser = this.updateUser.bind(this);
         this.updateMessage = this.updateMessage.bind(this);
-        this.connectSignalR = this.connectSignalR.bind(this);
         this.requestNotifications = this.requestNotifications.bind(this);
     }
 
-    initializeSignalR() {
-        this.connection.on("receive", (user: string, message: string) => {
-            this.addMessage(user, message);
-        });
-
-        this.connection.on("users", (number: number) => {
-            this.setState({ users: number })
-        });
-
-        this.connection.onclose(() => {
-            this.setState({ disable: true });
-            this.setState({ users: 0 });
-            this.addMessage("admin", "We are trying to reconnect!");
-
-            setTimeout(() => {
-                this.connectSignalR();
-            }, 15000);
-        });
+    onConnectionConnected() {
+        this.setState({ disable: false });
     }
 
-
-    connectSignalR(isInput: boolean = false) {
-        if (this.connection.state == HubConnectionState.Disconnected && (isInput || this.triedReconnect < 4)) {
-            this.triedReconnect++;
-            this.connection.start()
-                .then(
-                    () => {
-                        this.triedReconnect = 0;
-                        this.setState({ disable: false })
-                        console.log("connected");
-                    })
-                .catch(
-                    () => {
-                        setTimeout(() => {
-                            this.connectSignalR();
-                        }, 15000);
-                    }
-                );
-        }
+    onCloseConnection() {
+        this.setState({ disable: true, users: 0 });
+        this.addMessage("admin", "We are trying to reconnect!");
     }
 
     requestNotifications() {
@@ -124,14 +87,11 @@ class Chat extends Component<IProps, IState> {
         }
     }
 
-    sendmessage(user: string, message: string) {
-        this.connection.invoke('Send', user, message);
-    }
-
     send(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (this.state.user != "") {
-            this.sendmessage(this.state.user, this.state.message);
+            // this.sendmessage(this.state.user, this.state.message);
+            SignalRService.sendMessage(this.state.user, this.state.message)
             this.setState({ message: "" });
             this.addMessage(this.state.user, this.state.message, true);
         }
@@ -160,7 +120,7 @@ class Chat extends Component<IProps, IState> {
                     <div className="title">
                         <h1>ChatTest</h1>
                     </div>
-                    <div className="containerstate" onClick={e => this.connectSignalR(true)}>
+                    <div className="containerstate" onClick={e => SignalRService.connectSignalR(true)}>
                         <div className="hubstate" style={{ backgroundColor: (this.state.disable) ? "red" : "green" }} />
                     </div>
                 </div>
@@ -172,7 +132,7 @@ class Chat extends Component<IProps, IState> {
                         <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" id="userinput" />
                     </div>
                 </div>
-                <Messages messages={this.state.messages}/>
+                <Messages messages={this.state.messages} />
                 <div className="bottom">
                     <form onSubmit={e => this.send(e)}>
                         <div className="formgrid">
