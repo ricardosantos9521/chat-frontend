@@ -81,7 +81,7 @@ class Chat extends Component<IProps, IState> {
                 navigator.serviceWorker.getRegistration()
                     .then((regi: ServiceWorkerRegistration | undefined) => {
                         if (regi != undefined) {
-                            regi.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message});
+                            regi.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message, badge: 'conversation.png', tag: user});
                         }
                     });
             }
