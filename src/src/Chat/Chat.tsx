@@ -6,6 +6,7 @@ import off from './notifications_off.png';
 import on from './notifications_on.png';
 import Messages from '../Messages/Mensages';
 import SignalRService from '../SignalR/SignalRService';
+import { element } from 'prop-types';
 
 interface IProps {
 }
@@ -76,14 +77,14 @@ class Chat extends Component<IProps, IState> {
 
     sendNotification(user: string, message: string) {
         if (Notification.permission == "granted") {
-            // if (document.hidden == true) {
+            if (document.hidden == true) {
                 navigator.serviceWorker.getRegistration()
                     .then((regi: ServiceWorkerRegistration | undefined) => {
                         if (regi != undefined) {
-                            regi.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message });
+                            regi.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message});
                         }
                     });
-            // }
+            }
         }
     }
 
