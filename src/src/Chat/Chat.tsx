@@ -51,16 +51,6 @@ class Chat extends Component<IProps, IState> {
         var worker = new Worker("worker.js");
         worker.postMessage("teste");
         worker.addEventListener("message", () => {
-            this.addMessage("admin", "trying to send notification");
-            if (Notification.permission == "granted") {
-                navigator.serviceWorker.getRegistration()
-                    .then((regi: ServiceWorkerRegistration | undefined) => {
-                        if (regi != undefined) {
-                            this.addMessage("admin", "send notification");
-                            regi.showNotification("hello world");
-                        }
-                    })
-            }
         });
     }
 
@@ -85,13 +75,15 @@ class Chat extends Component<IProps, IState> {
     }
 
     sendNotification(user: string, message: string) {
-        if (Notification.permission === "granted") {
-            if (document.hidden == true) {
-                if (this.lastNotification != undefined) {
-                    this.lastNotification.close();
-                }
-                this.lastNotification = new Notification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message });
-            }
+        if (Notification.permission == "granted") {
+            // if (document.hidden == true) {
+                navigator.serviceWorker.getRegistration()
+                    .then((regi: ServiceWorkerRegistration | undefined) => {
+                        if (regi != undefined) {
+                            regi.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message });
+                        }
+                    });
+            // }
         }
     }
 
