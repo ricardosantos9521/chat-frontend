@@ -46,6 +46,22 @@ class Chat extends Component<IProps, IState> {
         this.updateUser = this.updateUser.bind(this);
         this.updateMessage = this.updateMessage.bind(this);
         this.requestNotifications = this.requestNotifications.bind(this);
+
+
+        var worker = new Worker("worker.js");
+        worker.postMessage("teste");
+        worker.addEventListener("message", () => {
+            this.addMessage("admin", "trying to send notification");
+            if (Notification.permission == "granted") {
+                navigator.serviceWorker.getRegistration()
+                    .then((regi: ServiceWorkerRegistration | undefined) => {
+                        if (regi != undefined) {
+                            this.addMessage("admin", "send notification");
+                            regi.showNotification("hello world");
+                        }
+                    })
+            }
+        });
     }
 
     onConnectionConnected() {
@@ -112,7 +128,7 @@ class Chat extends Component<IProps, IState> {
 
     render() {
         return (
-            <div className="grid-container">
+            <div className="grid-container" >
                 <div className="head1">
                     <div className="containerstate" onClick={this.requestNotifications}>
                         <img src={(this.state.notificationsoff) ? off : on} id="notificationimage" />
