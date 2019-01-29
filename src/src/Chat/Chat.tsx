@@ -79,9 +79,11 @@ class Chat extends Component<IProps, IState> {
         if (Notification.permission == "granted") {
             if (document.hidden == true) {
                 navigator.serviceWorker.getRegistration()
-                    .then((regi: ServiceWorkerRegistration | undefined) => {
-                        if (regi != undefined) {
-                            regi.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message, badge: 'conversation.png', tag: user});
+                    .then((registration: ServiceWorkerRegistration | undefined) => {
+                        if (registration != undefined) {
+                            registration.getNotifications({ tag: user }).then(function (notifications) {
+                                registration.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message, badge: 'chat.png', tag: user });
+                            });
                         }
                     });
             }
