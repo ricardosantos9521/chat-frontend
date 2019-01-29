@@ -1,12 +1,11 @@
 import React, { Component, FormEvent, ChangeEvent } from 'react';
 import './Chat.css';
-import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType } from '@aspnet/signalr';
 import { IMessage } from '../Messages/Mensage';
 import off from './notifications_off.png';
 import on from './notifications_on.png';
 import Messages from '../Messages/Mensages';
 import SignalRService from '../SignalR/SignalRService';
-import { element } from 'prop-types';
+import { bool } from 'prop-types';
 
 interface IProps {
 }
@@ -22,10 +21,12 @@ interface IState {
 
 class Chat extends Component<IProps, IState> {
 
-    private lastNotification: Notification | undefined = undefined;
-
     constructor(_props: any) {
         super(_props);
+
+        if (localStorage.getItem("notificationsoff") == undefined || Notification.permission == "denied") {
+            localStorage.setItem("notificationsoff", "true");
+        }
 
         this.state = {
             disable: true,
@@ -33,7 +34,7 @@ class Chat extends Component<IProps, IState> {
             message: "",
             messages: [],
             users: 0,
-            notificationsoff: (Notification.permission === "granted") ? false : true
+            notificationsoff: (localStorage.getItem("notificationsoff") == "true") ? true : false
         }
 
         SignalRService.registerOnConnected(this.onConnectionConnected.bind(this));
@@ -65,18 +66,42 @@ class Chat extends Component<IProps, IState> {
     }
 
     requestNotifications() {
-        Notification.requestPermission().then((permission) => {
-            if (permission == "granted") {
-                this.setState({ notificationsoff: false });
-            }
-            else if (permission == "denied") {
-                this.setState({ notificationsoff: true });
-            }
-        });
+        if (!("Notification" in window)) {
+            alert("This browser does not support desktop notification");
+            this.setState({ notificationsoff: true });
+            localStorage.setItem("notificationsoff", "true");
+            return;
+        }
+        else if (Notification.permission == "denied") {
+            alert("Please enable notifications on your browser for this site");
+            this.setState({ notificationsoff: true });
+            localStorage.setItem("notificationsoff", "true");
+            return;
+        }
+
+
+        if (Notification.permission == "default" && this.state.notificationsoff) {
+            Notification.requestPermission().then((permission) => {
+                if (permission == "granted") {
+                    this.setState({ notificationsoff: false });
+                    localStorage.setItem("notificationsoff", "false");
+                }
+                else if (permission == "denied") {
+                    this.setState({ notificationsoff: true });
+                    localStorage.setItem("notificationsoff", "true");
+                }
+            });
+            return;
+        }
+        else if (Notification.permission == "granted") {
+            let current: boolean = this.state.notificationsoff
+            this.setState({ notificationsoff: !current });
+            localStorage.setItem("notificationsoff", (!current).toString());
+        }
     }
 
     sendNotification(user: string, message: string) {
-        if (Notification.permission == "granted") {
+        if (!this.state.notificationsoff && Notification.permission == "granted") {
             if (document.hidden == true) {
                 navigator.serviceWorker.getRegistration()
                     .then((registration: ServiceWorkerRegistration | undefined) => {
