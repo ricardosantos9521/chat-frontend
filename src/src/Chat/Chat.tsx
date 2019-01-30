@@ -48,12 +48,6 @@ class Chat extends Component<IProps, IState> {
         this.updateUser = this.updateUser.bind(this);
         this.updateMessage = this.updateMessage.bind(this);
         this.requestNotifications = this.requestNotifications.bind(this);
-
-
-        var worker = new Worker("worker.js");
-        worker.postMessage("teste");
-        worker.addEventListener("message", () => {
-        });
     }
 
     onConnectionConnected() {
