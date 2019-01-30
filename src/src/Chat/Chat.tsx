@@ -107,7 +107,7 @@ class Chat extends Component<IProps, IState> {
                     .then((registration: ServiceWorkerRegistration | undefined) => {
                         if (registration != undefined) {
                             registration.getNotifications({ tag: user }).then(function (notifications) {
-                                registration.showNotification("New message in ChatTest!", { icon: 'conversation.png', body: user + ": " + message, badge: 'chat.png', tag: user });
+                                registration.showNotification("New message in ChatTest!", { icon: 'icons/icon-192x192.png', body: user + ": " + message, badge: 'chat.png', tag: user });
                             });
                         }
                     });
