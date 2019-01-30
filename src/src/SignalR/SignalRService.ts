@@ -13,6 +13,9 @@ class SignalR {
             .withUrl("/signalr/server/chat", { transport: HttpTransportType.WebSockets })             //need to change header in inverse proxy on synology to support websockets
             .build();
 
+        this._connection.serverTimeoutInMilliseconds = 60000;
+        this._connection.keepAliveIntervalInMilliseconds = 30000;
+
         this._connection.onclose(() => {
             console.log("Connection close!");
         });
