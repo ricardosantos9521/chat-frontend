@@ -5,7 +5,7 @@ import off from './notifications_off.png';
 import on from './notifications_on.png';
 import Messages from '../Messages/Mensages';
 import SignalRService from '../SignalR/SignalRService';
-import Push from 'push.js';
+import { bool } from 'prop-types';
 
 interface IProps {
 }
@@ -97,15 +97,14 @@ class Chat extends Component<IProps, IState> {
     sendNotification(user: string, message: string) {
         if (!this.state.notificationsoff && Notification.permission == "granted") {
             if (document.hidden == true) {
-                Push.create("New message in ChatTest!",{
-                    body: user + ": " + message,
-                    icon: 'icons/icon-192x192.png',
-                    tag: user,
-                    onClick: function () {
-                        window.focus();
-                        self.close();
-                    }
-                });
+                navigator.serviceWorker.getRegistration()
+                    .then((registration: ServiceWorkerRegistration | undefined) => {
+                        if (registration != undefined) {
+                            registration.getNotifications({ tag: user }).then(function (notifications) {
+                                registration.showNotification("New message in ChatTest!", { icon: 'icons/icon-192x192.png', body: user + ": " + message, badge: 'chat.png', tag: user });
+                            });
+                        }
+                    });
             }
         }
     }
