@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: signalrclient
-        image: "ricardosantos9521/teamrics:signalrclient_BUILDNUMBER"
+        image: "registry.gitlab.com/ricardosantos9521/github/signalrclient:BUILDNUMBER"
         ports:
         - containerPort: 80
         resources:

@@ -9,7 +9,7 @@ steps:
   inputs:
     containerregistrytype: 'Container Registry'
     command: 'Build an image'
-    imageName: 'ricardosantos9521/teamrics:signalrclient_$(Build.BuildNumber)'
+    imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrclient:$(Build.BuildNumber)'
     dockerFile: Dockerfile
     dockerRegistryEndpoint: teamrics
 
@@ -18,7 +18,7 @@ steps:
   inputs:
     containerregistrytype: 'Container Registry'
     command: 'Push an image'
-    imageName: 'ricardosantos9521/teamrics:signalrclient_$(Build.BuildNumber)'
+    imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrclient:$(Build.BuildNumber)'
     dockerFile: Dockerfile
     dockerRegistryEndpoint: teamrics
 
