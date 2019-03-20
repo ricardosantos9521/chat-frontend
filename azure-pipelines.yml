@@ -11,7 +11,7 @@ steps:
     command: 'Build an image'
     imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrclient:$(Build.BuildNumber)'
     dockerFile: Dockerfile
-    dockerRegistryEndpoint: teamrics
+    dockerRegistryEndpoint: 'gitlab registry'
 
 - task: Docker@1
   displayName: 'Push an image'
@@ -20,7 +20,7 @@ steps:
     command: 'Push an image'
     imageName: 'registry.gitlab.com/ricardosantos9521/github/signalrclient:$(Build.BuildNumber)'
     dockerFile: Dockerfile
-    dockerRegistryEndpoint: teamrics
+    dockerRegistryEndpoint: 'gitlab registry'
 
 - task: CopyFiles@1
   displayName: copy kubernetes yaml
