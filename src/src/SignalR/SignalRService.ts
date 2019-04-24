@@ -10,7 +10,7 @@ class SignalR {
 
     constructor() {
         this._connection = new HubConnectionBuilder()
-            .withUrl("/signalr/server/chat", { transport: HttpTransportType.WebSockets })             //need to change header in inverse proxy on synology to support websockets
+            .withUrl("/chat/server/chat", { transport: HttpTransportType.WebSockets })             //need to change header in inverse proxy on synology to support websockets
             .build();
 
         this._connection.serverTimeoutInMilliseconds = 60000;
