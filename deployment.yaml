@@ -59,7 +59,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: /signalr/client/
+      - path: /signalr/client/(.*)
         backend:
           serviceName: signalrclient-svc
           servicePort: 80
