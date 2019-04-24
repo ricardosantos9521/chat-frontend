@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: signalrclient-dpl
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 1
   strategy:
     rollingUpdate:
@@ -25,7 +25,7 @@ spec:
         resources:
           limits:
             memory: "100Mi"
-            cpu: "200m"
+            cpu: "100m"
         readinessProbe:
           httpGet:
              path: /
