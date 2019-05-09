@@ -1,36 +1,68 @@
-pool: "Hosted Ubuntu 1604"
-
 trigger:
 - master
 
-steps:
-- task: Docker@1
-  displayName: 'Build an image'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    command: 'Build an image'
-    imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.client:$(Build.BuildNumber)'
-    dockerFile: Dockerfile
-    dockerRegistryEndpoint: 'gitlab registry'
+stages:
 
-- task: Docker@1
-  displayName: 'Push an image'
-  inputs:
-    containerregistrytype: 'Container Registry'
-    command: 'Push an image'
-    imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.client:$(Build.BuildNumber)'
-    dockerFile: Dockerfile
-    dockerRegistryEndpoint: 'gitlab registry'
+#build stage
+- stage: Build
+  jobs:
+  - job: BuildJob
+    pool: "Hosted Ubuntu 1604"
+    steps:
+    - task: Docker@1
+      displayName: 'Build an image'
+      inputs:
+        containerregistrytype: 'Container Registry'
+        command: 'Build an image'
+        imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.client:$(Build.BuildNumber)'
+        dockerFile: Dockerfile
+        dockerRegistryEndpoint: 'gitlab registry'
 
-- task: CopyFiles@1
-  displayName: copy kubernetes yaml
-  inputs: 
-    contents: "deployment.yaml"
-    targetFolder: $(Build.ArtifactStagingDirectory)
+    - task: Docker@1
+      displayName: 'Push an image'
+      inputs:
+        containerregistrytype: 'Container Registry'
+        command: 'Push an image'
+        imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.client:$(Build.BuildNumber)'
+        dockerFile: Dockerfile
+        dockerRegistryEndpoint: 'gitlab registry'
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: drop
+    - task: CopyFiles@1
+      displayName: copy kubernetes yaml
+      inputs: 
+        contents: "deployment.yaml"
+        targetFolder: $(Build.ArtifactStagingDirectory)
 
-      
+    - task: PublishBuildArtifacts@1
+      inputs:
+        pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        artifactName: drop
+
+#deploy stage
+- stage: Deploy
+  dependsOn: Build
+  jobs:
+  - job: DeployJob
+    pool: "HomeServers"
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        artifactName: 'drop'
+        downloadPath: '$(System.DefaultWorkingDirectory)'
+    - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
+      displayName: 'RegEx Match & Replace'
+      inputs:
+        PathToFile: '$(System.DefaultWorkingDirectory)/drop/deployment.yaml'
+        RegEx: BUILDNUMBER
+        ValueToReplace: '$(Build.BuildNumber)'
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'None'
+        command: 'apply'
+        useConfigurationFile: true
+        configuration: '$(System.DefaultWorkingDirectory)/drop/deployment.yaml'
+        secretType: 'dockerRegistry'
+        containerRegistryType: 'Container Registry'
+        dockerRegistryEndpoint: 'gitlab registry'
+        secretName: 'secretteamrics'
