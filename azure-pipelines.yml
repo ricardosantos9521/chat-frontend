@@ -1,38 +1,37 @@
 trigger:
 - master
 
-stages:
+variables:
+  poolName: HomeServers
+  imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.client:$(Build.BuildNumber)'
+  dockerRegistryEndpoint: 'gitlab registry'
 
+stages:
 #build stage
 - stage: Build
   jobs:
   - job: BuildJob
-    pool: "Hosted Ubuntu 1604"
+    pool: $(poolName)
     steps:
     - task: Docker@1
       displayName: 'Build an image'
       inputs:
-        containerregistrytype: 'Container Registry'
         command: 'Build an image'
-        imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.client:$(Build.BuildNumber)'
+        imageName: $(imageName)
         dockerFile: Dockerfile
-        dockerRegistryEndpoint: 'gitlab registry'
-
     - task: Docker@1
       displayName: 'Push an image'
       inputs:
         containerregistrytype: 'Container Registry'
         command: 'Push an image'
-        imageName: 'registry.gitlab.com/ricardosantos9521/github/chattest.client:$(Build.BuildNumber)'
+        imageName: $(imageName)
         dockerFile: Dockerfile
-        dockerRegistryEndpoint: 'gitlab registry'
-
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
     - task: CopyFiles@1
       displayName: copy kubernetes yaml
       inputs: 
         contents: "deployment.yaml"
         targetFolder: $(Build.ArtifactStagingDirectory)
-
     - task: PublishBuildArtifacts@1
       inputs:
         pathtoPublish: '$(Build.ArtifactStagingDirectory)'
@@ -43,7 +42,7 @@ stages:
   dependsOn: Build
   jobs:
   - job: DeployJob
-    pool: "HomeServers"
+    pool: $(poolName)
     steps:
     - task: DownloadBuildArtifacts@0
       inputs:
@@ -64,5 +63,5 @@ stages:
         configuration: '$(System.DefaultWorkingDirectory)/drop/deployment.yaml'
         secretType: 'dockerRegistry'
         containerRegistryType: 'Container Registry'
-        dockerRegistryEndpoint: 'gitlab registry'
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
         secretName: 'secretteamrics'
