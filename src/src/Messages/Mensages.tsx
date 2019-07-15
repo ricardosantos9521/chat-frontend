@@ -32,7 +32,7 @@ class Messages extends Component<IProps, IState> {
 
     scrollToEnd() {
         var div = document.getElementById("messages") as HTMLDivElement;
-        if (div !== undefined && div.lastChild !== undefined) (div.lastChild as HTMLDivElement).scrollIntoView();
+        if (div !== null && div.lastChild !== null) (div.lastChild as HTMLDivElement).scrollIntoView();
     }
 
     messages() {
