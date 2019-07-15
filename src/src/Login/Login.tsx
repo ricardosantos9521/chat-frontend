@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 
 class Login extends Component {
-
-    constructor(props: Readonly<{}>) {
-        super(props);
-    }
-
     render() {
         return (
             <div>

@@ -25,7 +25,7 @@ interface IState {
 class Message extends Component<IProps, IState> {
 
     hideUserName(user: string): boolean {
-        if (this.props.userBefore == user) {
+        if (this.props.userBefore === user) {
             return true;
         }
 

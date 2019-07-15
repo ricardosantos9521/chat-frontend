@@ -5,7 +5,6 @@ import off from './notifications_off.png';
 import on from './notifications_on.png';
 import Messages from '../Messages/Mensages';
 import SignalRService from '../SignalR/SignalRService';
-import { bool } from 'prop-types';
 
 interface IProps {
 }
@@ -24,7 +23,7 @@ class Chat extends Component<IProps, IState> {
     constructor(_props: any) {
         super(_props);
 
-        if (localStorage.getItem("notificationsoff") == undefined || Notification.permission == "denied") {
+        if (localStorage.getItem("notificationsoff") === undefined || Notification.permission === "denied") {
             localStorage.setItem("notificationsoff", "true");
         }
 
@@ -34,7 +33,7 @@ class Chat extends Component<IProps, IState> {
             message: "",
             messages: [],
             users: 0,
-            notificationsoff: (localStorage.getItem("notificationsoff") == "true") ? true : false
+            notificationsoff: (localStorage.getItem("notificationsoff") === "true") ? true : false
         }
 
         SignalRService.registerOnConnected(this.onConnectionConnected.bind(this));
@@ -66,7 +65,7 @@ class Chat extends Component<IProps, IState> {
             localStorage.setItem("notificationsoff", "true");
             return;
         }
-        else if (Notification.permission == "denied") {
+        else if (Notification.permission === "denied") {
             alert("Please enable notifications on your browser for this site");
             this.setState({ notificationsoff: true });
             localStorage.setItem("notificationsoff", "true");
@@ -74,20 +73,20 @@ class Chat extends Component<IProps, IState> {
         }
 
 
-        if (Notification.permission == "default" && this.state.notificationsoff) {
+        if (Notification.permission === "default" && this.state.notificationsoff) {
             Notification.requestPermission().then((permission) => {
-                if (permission == "granted") {
+                if (permission === "granted") {
                     this.setState({ notificationsoff: false });
                     localStorage.setItem("notificationsoff", "false");
                 }
-                else if (permission == "denied") {
+                else if (permission === "denied") {
                     this.setState({ notificationsoff: true });
                     localStorage.setItem("notificationsoff", "true");
                 }
             });
             return;
         }
-        else if (Notification.permission == "granted") {
+        else if (Notification.permission === "granted") {
             let current: boolean = this.state.notificationsoff
             this.setState({ notificationsoff: !current });
             localStorage.setItem("notificationsoff", (!current).toString());
@@ -95,11 +94,11 @@ class Chat extends Component<IProps, IState> {
     }
 
     sendNotification(user: string, message: string) {
-        if (!this.state.notificationsoff && Notification.permission == "granted") {
-            if (document.hidden == true) {
+        if (!this.state.notificationsoff && Notification.permission === "granted") {
+            if (document.hidden === true) {
                 navigator.serviceWorker.getRegistration()
                     .then((registration: ServiceWorkerRegistration | undefined) => {
-                        if (registration != undefined) {
+                        if (registration !== undefined) {
                             registration.getNotifications({ tag: user }).then(function (notifications) {
                                 registration.showNotification("New message in ChatTest!", { icon: 'icons/icon-192x192.png', body: user + ": " + message, badge: 'chat.png', tag: user });
                             });
@@ -111,7 +110,6 @@ class Chat extends Component<IProps, IState> {
 
     addMessage(user: string, message: string, mymessage = false) {
         this.setState({ messages: [...this.state.messages, new IMessage(user, message, mymessage)] });
-        var div = document.getElementById("messages") as HTMLDivElement;
         if (!mymessage) {
             this.sendNotification(user, message);
         }
@@ -119,7 +117,7 @@ class Chat extends Component<IProps, IState> {
 
     send(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if (this.state.user != "") {
+        if (this.state.user !== "") {
             // this.sendmessage(this.state.user, this.state.message);
             SignalRService.sendMessage(this.state.user, this.state.message)
             this.setState({ message: "" });
@@ -128,7 +126,7 @@ class Chat extends Component<IProps, IState> {
         else {
             alert("User cannot be empty!");
             var input = document.getElementById("userinput") as HTMLInputElement;
-            if (input != undefined) input.focus();
+            if (input !== undefined) input.focus();
         }
     }
 
@@ -145,7 +143,7 @@ class Chat extends Component<IProps, IState> {
             <div className="grid-container" >
                 <div className="head1">
                     <div className="containerstate" onClick={this.requestNotifications}>
-                        <img src={(this.state.notificationsoff) ? off : on} id="notificationimage" />
+                        <img src={(this.state.notificationsoff) ? off : on} id="notificationimage" alt="notificationimage" />
                     </div>
                     <div className="title">
                         <h1>ChatTest</h1>
@@ -170,7 +168,7 @@ class Chat extends Component<IProps, IState> {
                                 <input type="text" value={this.state.message} disabled={this.state.disable} onChange={this.updateMessage} placeholder="New Message" />
                             </div>
                             <div className="bottombutton">
-                                <button type="submit" disabled={this.state.disable || this.state.message == ""}>Send</button>
+                                <button type="submit" disabled={this.state.disable || this.state.message === ""}>Send</button>
                             </div>
                         </div>
                     </form>

@@ -24,7 +24,7 @@ class SignalR {
     }
 
     connectSignalR(isInput: boolean = false) {
-        if (this._connection.state == HubConnectionState.Disconnected && (isInput || this.triedReconnect < 4)) {
+        if (this._connection.state === HubConnectionState.Disconnected && (isInput || this.triedReconnect < 4)) {
             this.triedReconnect++;
             this._connection.start()
                 .then(() => {
@@ -44,7 +44,7 @@ class SignalR {
     }
 
     registerOnConnected(connected: () => void) {
-        addEventListener("connected", connected);
+        window.addEventListener("connected", connected);
     }
 
     registerMessageReceived(addMessage: (user: string, message: string) => void) {
