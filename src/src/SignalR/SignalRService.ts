@@ -1,4 +1,4 @@
-﻿import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType } from '@aspnet/signalr';
+﻿import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@aspnet/signalr';
 
 
 class SignalR {
@@ -10,11 +10,11 @@ class SignalR {
 
     constructor() {
         this._connection = new HubConnectionBuilder()
-            .withUrl("/chat/server/chat", { transport: HttpTransportType.WebSockets })             //need to change header in inverse proxy on synology to support websockets
+            .withUrl("/chat/server/chat", { transport: HttpTransportType.WebSockets, logger: LogLevel.Trace })             //need to change header in inverse proxy on synology to support websockets
             .build();
 
-        this._connection.serverTimeoutInMilliseconds = 60000;
-        this._connection.keepAliveIntervalInMilliseconds = 30000;
+        // this._connection.serverTimeoutInMilliseconds = 60000;
+        // this._connection.keepAliveIntervalInMilliseconds = 30000;
 
         this._connection.onclose(() => {
             console.log("Connection close!");
@@ -24,7 +24,7 @@ class SignalR {
     }
 
     connectSignalR(isInput: boolean = false) {
-        if (this._connection.state === HubConnectionState.Disconnected && (isInput || this.triedReconnect < 4)) {
+        if (this._connection !== undefined && this._connection.state === HubConnectionState.Disconnected && (isInput || this.triedReconnect < 4)) {
             this.triedReconnect++;
             this._connection.start()
                 .then(() => {
@@ -48,25 +48,44 @@ class SignalR {
     }
 
     registerMessageReceived(addMessage: (user: string, message: string) => void) {
-        this._connection.on('receive', (user: string, message: string) => {
-            addMessage(user, message);
-        });
+        if (this._connection !== undefined) {
+            this._connection.on('receive', (user: string, message: string) => {
+                addMessage(user, message);
+            });
+
+            return true;
+        }
+        return false;
     }
 
     sendMessage(user: string, message: string) {
-        this._connection.invoke('Send', user, message);
+        if (this._connection !== undefined) {
+            this._connection.invoke('Send', user, message);
+            return true;
+        }
+        return false;
     }
 
-    registerUsersChange(usersChanged: (number: number) => void) {
-        this._connection.on("users", (number: number) => {
-            usersChanged(number);
-        });
+    registerUsersChange(usersChanged: (number: number) => void): boolean {
+        if (this._connection !== undefined) {
+            this._connection.on("users", (number: number) => {
+                usersChanged(number);
+            });
+
+            return true;
+        }
+        return false;
     }
 
-    registerOnClose(close: () => void) {
-        this._connection.onclose(() => {
-            close();
-        });
+    registerOnClose(close: () => void): boolean {
+        if (this._connection !== undefined) {
+            this._connection.onclose(() => {
+                close();
+            });
+
+            return true;
+        }
+        return false;
     }
 
 }
