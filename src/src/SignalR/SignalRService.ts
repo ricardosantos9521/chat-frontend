@@ -10,11 +10,8 @@ class SignalR {
 
     constructor() {
         this._connection = new HubConnectionBuilder()
-            .withUrl("/chat/server/chat", { transport: HttpTransportType.WebSockets, logger: LogLevel.Trace })             //need to change header in inverse proxy on synology to support websockets
+            .withUrl("/chat/server/chat", { transport: HttpTransportType.WebSockets, logger: LogLevel.Debug, skipNegotiation: true })
             .build();
-
-        // this._connection.serverTimeoutInMilliseconds = 60000;
-        // this._connection.keepAliveIntervalInMilliseconds = 30000;
 
         this._connection.onclose(() => {
             console.log("Connection close!");
