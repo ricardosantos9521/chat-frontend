@@ -15,16 +15,18 @@ interface IState {
     message: string;
     messages: Array<IMessage>;
     users: number;
-    notificationsoff: boolean;
+    notificationsOff: boolean;
 }
 
 class Chat extends Component<IProps, IState> {
 
+    userInput = React.createRef<HTMLInputElement>();
+
     constructor(_props: any) {
         super(_props);
 
-        if (localStorage.getItem("notificationsoff") === undefined || Notification.permission === "denied") {
-            localStorage.setItem("notificationsoff", "true");
+        if (localStorage.getItem("notificationsOff") === undefined || Notification.permission === "denied") {
+            localStorage.setItem("notificationsOff", "true");
         }
 
         this.state = {
@@ -33,7 +35,7 @@ class Chat extends Component<IProps, IState> {
             message: "",
             messages: [],
             users: 0,
-            notificationsoff: (localStorage.getItem("notificationsoff") === "true") ? true : false
+            notificationsOff: (localStorage.getItem("notificationsOff") === "true") ? true : false
         }
 
         SignalRService.registerOnConnected(this.onConnectionConnected.bind(this));
@@ -61,40 +63,40 @@ class Chat extends Component<IProps, IState> {
     requestNotifications() {
         if (!("Notification" in window)) {
             alert("This browser does not support desktop notification");
-            this.setState({ notificationsoff: true });
-            localStorage.setItem("notificationsoff", "true");
+            this.setState({ notificationsOff: true });
+            localStorage.setItem("notificationsOff", "true");
             return;
         }
         else if (Notification.permission === "denied") {
             alert("Please enable notifications on your browser for this site");
-            this.setState({ notificationsoff: true });
-            localStorage.setItem("notificationsoff", "true");
+            this.setState({ notificationsOff: true });
+            localStorage.setItem("notificationsOff", "true");
             return;
         }
 
 
-        if (Notification.permission === "default" && this.state.notificationsoff) {
+        if (Notification.permission === "default" && this.state.notificationsOff) {
             Notification.requestPermission().then((permission) => {
                 if (permission === "granted") {
-                    this.setState({ notificationsoff: false });
-                    localStorage.setItem("notificationsoff", "false");
+                    this.setState({ notificationsOff: false });
+                    localStorage.setItem("notificationsOff", "false");
                 }
                 else if (permission === "denied") {
-                    this.setState({ notificationsoff: true });
-                    localStorage.setItem("notificationsoff", "true");
+                    this.setState({ notificationsOff: true });
+                    localStorage.setItem("notificationsOff", "true");
                 }
             });
             return;
         }
         else if (Notification.permission === "granted") {
-            let current: boolean = this.state.notificationsoff
-            this.setState({ notificationsoff: !current });
-            localStorage.setItem("notificationsoff", (!current).toString());
+            let current: boolean = this.state.notificationsOff
+            this.setState({ notificationsOff: !current });
+            localStorage.setItem("notificationsOff", (!current).toString());
         }
     }
 
     sendNotification(user: string, message: string) {
-        if (!this.state.notificationsoff && Notification.permission === "granted") {
+        if (!this.state.notificationsOff && Notification.permission === "granted") {
             if (document.hidden === true) {
                 navigator.serviceWorker.getRegistration()
                     .then((registration: ServiceWorkerRegistration | undefined) => {
@@ -108,9 +110,9 @@ class Chat extends Component<IProps, IState> {
         }
     }
 
-    addMessage(user: string, message: string, mymessage = false) {
-        this.setState({ messages: [...this.state.messages, new IMessage(user, message, mymessage)] });
-        if (!mymessage) {
+    addMessage(user: string, message: string, myMessage = false) {
+        this.setState({ messages: [...this.state.messages, new IMessage(user, message, myMessage)] });
+        if (!myMessage) {
             this.sendNotification(user, message);
         }
     }
@@ -118,15 +120,15 @@ class Chat extends Component<IProps, IState> {
     send(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (this.state.user !== "") {
-            // this.sendmessage(this.state.user, this.state.message);
             SignalRService.sendMessage(this.state.user, this.state.message)
             this.setState({ message: "" });
             this.addMessage(this.state.user, this.state.message, true);
         }
         else {
             alert("User cannot be empty!");
-            var input = document.getElementById("userinput") as HTMLInputElement;
-            if (input !== undefined) input.focus();
+            if (this.userInput !== undefined && this.userInput.current !== null) {
+                this.userInput.current.focus();
+            }
         }
     }
 
@@ -143,7 +145,7 @@ class Chat extends Component<IProps, IState> {
             <div className="grid-container" >
                 <div className="head1">
                     <div className="containerstate" onClick={this.requestNotifications}>
-                        <img src={(this.state.notificationsoff) ? off : on} id="notificationimage" alt="notificationimage" />
+                        <img src={(this.state.notificationsOff) ? off : on} id="notificationimage" alt="notificationimage" />
                     </div>
                     <div className="title">
                         <h1>ChatTest</h1>
@@ -157,7 +159,7 @@ class Chat extends Component<IProps, IState> {
                         Users: {this.state.users}
                     </div>
                     <div className="user">
-                        <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" id="userinput" />
+                        <input type="text" value={this.state.user} onChange={this.updateUser} placeholder="User" ref={this.userInput} />
                     </div>
                 </div>
                 <Messages messages={this.state.messages} />
