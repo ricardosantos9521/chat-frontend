@@ -58,6 +58,15 @@ stages:
     - task: Kubernetes@1
       inputs:
         connectionType: 'None'
+        namespace: 'chat'
+        command: 'create'
+        useConfigurationFile: true
+        configurationType: 'inline'
+        inline: 'namespace chat'
+    - task: Kubernetes@1
+      inputs:
+        connectionType: 'None'
+        namespace: chat
         command: 'apply'
         useConfigurationFile: true
         configuration: '$(System.DefaultWorkingDirectory)/drop/deployment.yaml'
@@ -65,4 +74,3 @@ stages:
         containerRegistryType: 'Container Registry'
         dockerRegistryEndpoint: $(dockerRegistryEndpoint)
         secretName: 'gitlabdockersecret'
-        namespace: chat
