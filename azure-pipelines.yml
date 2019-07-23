@@ -58,11 +58,8 @@ stages:
     - task: Kubernetes@1
       inputs:
         connectionType: 'None'
-        namespace: 'chat'
         command: 'create'
-        useConfigurationFile: true
-        configurationType: 'inline'
-        inline: 'namespace chat'
+        arguments: 'namespace chat'
     - task: Kubernetes@1
       inputs:
         connectionType: 'None'
