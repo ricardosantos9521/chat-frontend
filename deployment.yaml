@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+   name: chatclient
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chattestclient-dpl
+  name: chatclient-dpl
+  namespace: chatclient
 spec:
   replicas: 1
   revisionHistoryLimit: 1
@@ -11,15 +17,15 @@ spec:
       maxSurge: 2
   selector:
     matchLabels:
-      app: chattestclient
+      app: chatclient-app
   template:
     metadata:
        labels:
-         app: chattestclient
+         app: chatclient-app
     spec:
       containers:
-      - name: chattestclient
-        image: "registry.gitlab.com/ricardosantos9521/github/chattest.client:BUILDNUMBER"
+      - name: chatclient-container
+        image: "registry.gitlab.com/ricardosantos9521/github/chatclient:BUILDNUMBER"
         ports:
         - containerPort: 80
         resources:
@@ -39,21 +45,21 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: chattestclient-svc
+  name: chatclient-svc
+  namespace: chatclient
 spec:
   selector:
-    app: chattestclient
+    app: chatclient-app
   ports:
   - port: 80
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: chattestclient-ing
+  name: chatclient-ing
+  namespace: chatclient
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    # nginx.ingress.kubernetes.io/add-base-url: "true"
-    # nginx.ingress.kubernetes.io/ingress.allow-http: "true"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
@@ -66,5 +72,5 @@ spec:
       paths:
       - path: /chat/client/(.*)
         backend:
-          serviceName: chattestclient-svc
+          serviceName: chatclient-svc
           servicePort: 80
