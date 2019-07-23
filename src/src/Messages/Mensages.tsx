@@ -34,7 +34,7 @@ class Messages extends Component<IProps, IState> {
         var div = document.getElementById("messages") as HTMLDivElement;
         if (div !== null && div.lastChild !== null) {
             var lastChild = div.lastChild as HTMLDivElement;
-            if (lastChild !== null) {
+            if (lastChild !== undefined && lastChild !== null) {
                 lastChild.scrollIntoView();
             }
         }
@@ -44,11 +44,11 @@ class Messages extends Component<IProps, IState> {
         this.userBefore = "";
         this.user = "";
         return (
-            this.props.messages.map((m, ikey) => {
+            this.props.messages.map((m, key) => {
                 this.userBefore = this.user;
                 this.user = m.user;
                 return (
-                    <Message message={m} key={ikey} userBefore={this.userBefore} />
+                    <Message message={m} key={key} userBefore={this.userBefore} />
                 );
             })
         );
