@@ -56,6 +56,7 @@ stages:
         RegEx: BUILDNUMBER
         ValueToReplace: '$(Build.BuildNumber)'
     - task: Kubernetes@1
+      displayName: 'Create namespace'
       inputs:
         connectionType: 'None'
         command: 'create'
