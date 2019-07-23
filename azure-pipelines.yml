@@ -64,4 +64,5 @@ stages:
         secretType: 'dockerRegistry'
         containerRegistryType: 'Container Registry'
         dockerRegistryEndpoint: $(dockerRegistryEndpoint)
-        secretName: 'secretteamrics'
+        secretName: 'gitlabdockersecret'
+        namespace: chat

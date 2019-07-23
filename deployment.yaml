@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-   name: chatclient
+   name: chat
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chatclient-dpl
-  namespace: chatclient
+  namespace: chat
 spec:
   replicas: 1
   revisionHistoryLimit: 1
@@ -40,13 +40,13 @@ spec:
           periodSeconds: 10
           successThreshold: 1
       imagePullSecrets:
-        - name: secretteamrics
+        - name: gitlabdockersecret
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: chatclient-svc
-  namespace: chatclient
+  namespace: chat
 spec:
   selector:
     app: chatclient-app
@@ -57,7 +57,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: chatclient-ing
-  namespace: chatclient
+  namespace: chat
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
