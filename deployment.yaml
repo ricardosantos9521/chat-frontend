@@ -59,10 +59,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - rics.synology.me
+    - ricspt.ddns.net
     secretName: tlscert
   rules:
-  - host: rics.synology.me
+  - host: ricspt.ddns.net
     http:
       paths:
       - path: /chat/client/(.*)
