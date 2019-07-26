@@ -5,11 +5,6 @@
   "dependencies": {
     "@aspnet/signalr": "1.1.4",
     "@aspnet/signalr-protocol-msgpack": "1.1.0",
-    "@types/jest": "24.0.15",
-    "@types/node": "12.6.3",
-    "@types/react": "16.8.23",
-    "@types/react-dom": "16.8.4",
-    "@types/react-router-dom": "4.3.4",
     "react": "16.8.6",
     "react-dom": "16.8.6",
     "react-router-dom": "5.0.1",
@@ -31,5 +26,12 @@
     "not ie <= 11",
     "not op_mini all"
   ],
+  "devDependencies": {
+    "@types/jest": "24.0.15",
+    "@types/node": "12.6.8",
+    "@types/react": "16.8.23",
+    "@types/react-dom": "16.8.5",
+    "@types/react-router-dom": "4.3.4"
+  },
   "homepage": "https://127.0.0.1/chat/client/"
 }
