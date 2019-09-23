@@ -11,6 +11,7 @@ class SignalR {
     constructor() {
         this._connection = new HubConnectionBuilder()
             .withUrl("/chat/server/chat", { transport: HttpTransportType.WebSockets, logger: LogLevel.Debug, skipNegotiation: true })
+            .withAutomaticReconnect()
             .build();
 
         this._connection.onclose(() => {
