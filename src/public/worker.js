@@ -1,7 +1,7 @@
-importScripts("/chat/client/service-worker.js")
+importScripts("/chat/frontend/service-worker.js")
 
 self.addEventListener("notificationclick", (event) => {
-    let url = 'https://rics.synology.me/chat/client/';
+    let url = 'https://rics.synology.me/chat/frontend/';
     var notification = event.notification;
     var action = event.action;
 
