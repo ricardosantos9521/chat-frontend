@@ -1,6 +1,6 @@
 {
-  "short_name": "ChatTest",
-  "name": "ChatTest",
+  "short_name": "Chat",
+  "name": "Chat",
   "icons": [
     {
       "src": "icons/icon-192x192.png",

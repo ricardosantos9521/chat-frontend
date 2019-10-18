@@ -1,5 +1,5 @@
 {
-  "name": "signalrclient",
+  "name": "chatfrontend",
   "version": "0.2.0",
   "private": true,
   "dependencies": {
@@ -33,5 +33,5 @@
     "@types/react-dom": "16.9.0",
     "@types/react-router-dom": "4.3.5"
   },
-  "homepage": "https://127.0.0.1/chat/client/"
+  "homepage": "https://127.0.0.1/chat/frontend/"
 }

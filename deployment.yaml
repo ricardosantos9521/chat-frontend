@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: chatclient-dpl
+  name: chat-frontend-dpl
   namespace: chat
 spec:
   replicas: 1
@@ -12,60 +12,60 @@ spec:
       maxSurge: 2
   selector:
     matchLabels:
-      app: chatclient-app
+      app: chat-frontend-app
   template:
     metadata:
-       labels:
-         app: chatclient-app
+      labels:
+        app: chat-frontend-app
     spec:
       containers:
-      - name: chatclient-container
-        image: "registry.gitlab.com/ricardosantos9521/github/chatclient:BUILDNUMBER"
-        ports:
-        - containerPort: 80
-        resources:
-          limits:
-            memory: "100Mi"
-            cpu: "60m"
-        readinessProbe:
-          httpGet:
-             path: /
-             port: 80
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          successThreshold: 1
+        - name: chat-frontend-container
+          image: "registry.gitlab.com/ricardosantos9521/chat/frontend:BUILDNUMBER"
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "100Mi"
+              cpu: "60m"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
       imagePullSecrets:
         - name: gitlabdockersecret
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: chatclient-svc
+  name: chat-frontend-svc
   namespace: chat
 spec:
   selector:
-    app: chatclient-app
+    app: chat-frontend-app
   ports:
-  - port: 80
+    - port: 80
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: chatclient-ing
+  name: chat-frontend-ing
   namespace: chat
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
-  - hosts:
-    - ricspt.ddns.net
-    secretName: tlscert
+    - hosts:
+        - ricspt.ddns.net
+      secretName: tlscert
   rules:
-  - host: ricspt.ddns.net
-    http:
-      paths:
-      - path: /chat/client/(.*)
-        backend:
-          serviceName: chatclient-svc
-          servicePort: 80
+    - host: ricspt.ddns.net
+      http:
+        paths:
+          - path: /chat/frontend/(.*)
+            backend:
+              serviceName: chat-frontend-svc
+              servicePort: 80
