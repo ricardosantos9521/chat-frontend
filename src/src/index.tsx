@@ -7,7 +7,7 @@ import { BrowserRouter, Route } from "react-router-dom";
 import Login from './Login/Login';
 
 ReactDOM.render(
-    <BrowserRouter basename="/chat/client/">
+    <BrowserRouter basename="/chat/frontend/">
         <div style={{ width: "100%", height: "100%" }}>
             <Route exact path="/" component={App} />
             <Route path="/login" component={Login} />
