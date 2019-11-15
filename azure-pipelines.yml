@@ -58,6 +58,7 @@ stages:
 
 - stage: Deploy
   dependsOn: Build
+  condition: succeeded('Build')
   jobs:
   - deployment: DeployJob
     environment: "chat-frontend deploy"
