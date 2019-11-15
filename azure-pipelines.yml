@@ -61,13 +61,14 @@ stages:
         deploy:
           steps:
           - task: Kubernetes@1
-            displayName: "Create namespace"
+            displayName: "Create namespace if don't exist"
             inputs:
               connectionType: "None"
               command: "apply"
               useConfigurationFile: true
               configuration: "$(Pipeline.Workspace)/pipeline/namespace.yaml"
           - task: Kubernetes@1
+            displayName: "Apply changes"
             inputs:
               connectionType: "None"
               namespace: chat
