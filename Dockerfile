@@ -1,10 +1,11 @@
 FROM node:carbon as build
 WORKDIR /app
-COPY src/package*.json ./
+COPY src/package.json ./
+COPY src/yarn.lock ./
 COPY src/tsconfig.json ./
-RUN npm install
+RUN yarn install
 COPY src/ .
-RUN npm run build
+RUN yarn run build
 
 # FROM node:carbon as final
 # RUN npm install -g serve
