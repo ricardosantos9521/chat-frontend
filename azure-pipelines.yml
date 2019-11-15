@@ -44,11 +44,11 @@ stages:
         displayName: copy kubernetes yaml
         inputs:
           contents: "*.yaml"
-          targetFolder: $(Build.ArtifactStagingDirectory)
-      - task: PublishBuildArtifacts@1
+          targetFolder: $(Pipeline.Workspace)
+      - task: PublishPipelineArtifact@1
         inputs:
-          pathtoPublish: "$(Build.ArtifactStagingDirectory)"
-          artifactName: drop
+          targetPath: '$(Pipeline.Workspace)'
+          publishLocation: 'pipeline'
 
 - stage: Deploy
   dependsOn: Build
@@ -66,14 +66,14 @@ stages:
               connectionType: "None"
               command: "apply"
               useConfigurationFile: true
-              configuration: "$(System.DefaultWorkingDirectory)/drop/namespace.yaml"
+              configuration: "$(Pipeline.Workspace)/pipeline/namespace.yaml"
           - task: Kubernetes@1
             inputs:
               connectionType: "None"
               namespace: chat
               command: "apply"
               useConfigurationFile: true
-              configuration: "$(System.DefaultWorkingDirectory)/drop/deployment.yaml"
+              configuration: "$(Pipeline.Workspace)/pipeline/deployment.yaml"
               secretType: "dockerRegistry"
               containerRegistryType: "Container Registry"
               dockerRegistryEndpoint: $(dockerRegistryEndpoint)
