@@ -53,6 +53,7 @@ stages:
 
   #deploy stage
   - stage: Deploy
+    dependsOn: Build
     jobs:
     - deployment: DeployJob
       pool: $(poolDeployName)
