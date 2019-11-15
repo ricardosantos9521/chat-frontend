@@ -53,14 +53,13 @@ stages:
 
   #deploy stage
   - stage: Deploy
-    dependsOn: Build
     jobs:
     - deployment: DeployJob
       pool: $(poolDeployName)
       dependsOn: Build
       environment: "chat-frontend deploy"
       strategy:
-        runOnce:
+        rolling:
           deploy:
             steps:
             - task: DownloadBuildArtifacts@0
