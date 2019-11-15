@@ -57,7 +57,6 @@ stages:
     jobs:
     - deployment: DeployJob
       pool: $(poolDeployName)
-      dependsOn: Build
       environment: "chat-frontend deploy"
       strategy:
         runOnce:
