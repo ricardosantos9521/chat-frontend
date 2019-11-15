@@ -60,29 +60,33 @@ stages:
         ne(variables['Build.Reason'], 'PullRequest')
       )
     jobs:
-      - job: DeployJob
-        pool: $(poolDeployName)
-        steps:
-          - task: DownloadBuildArtifacts@0
-            inputs:
-              buildType: "current"
-              artifactName: "drop"
-              downloadPath: "$(System.DefaultWorkingDirectory)"
-          - task: Kubernetes@1
-            displayName: "Create namespace"
-            inputs:
-              connectionType: "None"
-              command: "apply"
-              useConfigurationFile: true
-              configuration: "$(System.DefaultWorkingDirectory)/drop/namespace.yaml"
-          - task: Kubernetes@1
-            inputs:
-              connectionType: "None"
-              namespace: chat
-              command: "apply"
-              useConfigurationFile: true
-              configuration: "$(System.DefaultWorkingDirectory)/drop/deployment.yaml"
-              secretType: "dockerRegistry"
-              containerRegistryType: "Container Registry"
-              dockerRegistryEndpoint: $(dockerRegistryEndpoint)
-              secretName: "gitlabdockersecret"
+    - deployment: DeployJob
+      pool: $(poolDeployName)
+      environment: "chat-frontend deploy"
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+            - task: DownloadBuildArtifacts@0
+              inputs:
+                buildType: "current"
+                artifactName: "drop"
+                downloadPath: "$(System.DefaultWorkingDirectory)"
+            - task: Kubernetes@1
+              displayName: "Create namespace"
+              inputs:
+                connectionType: "None"
+                command: "apply"
+                useConfigurationFile: true
+                configuration: "$(System.DefaultWorkingDirectory)/drop/namespace.yaml"
+            - task: Kubernetes@1
+              inputs:
+                connectionType: "None"
+                namespace: chat
+                command: "apply"
+                useConfigurationFile: true
+                configuration: "$(System.DefaultWorkingDirectory)/drop/deployment.yaml"
+                secretType: "dockerRegistry"
+                containerRegistryType: "Container Registry"
+                dockerRegistryEndpoint: $(dockerRegistryEndpoint)
+                secretName: "gitlabdockersecret"
