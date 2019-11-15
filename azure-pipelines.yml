@@ -53,15 +53,10 @@ stages:
 
   #deploy stage
   - stage: Deploy
-    dependsOn: Build
-    condition: |
-      and(
-        eq(variables['Build.SourceBranch'], 'refs/heads/master'),
-        ne(variables['Build.Reason'], 'PullRequest')
-      )
     jobs:
     - deployment: DeployJob
       pool: $(poolDeployName)
+      dependsOn: Build
       environment: "chat-frontend deploy"
       strategy:
         runOnce:
