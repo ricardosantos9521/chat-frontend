@@ -20,35 +20,35 @@ stages:
     pool:
       vmImage: "ubuntu-latest"
     steps:
-      - task: Docker@1
-        displayName: "Build an image"
-        inputs:
-          command: "Build an image"
-          imageName: $(imageName)
-          dockerFile: Dockerfile
-      - task: Docker@1
-        displayName: "Push an image"
-        inputs:
-          containerregistrytype: "Container Registry"
-          command: "Push an image"
-          imageName: $(imageName)
-          dockerFile: Dockerfile
-          dockerRegistryEndpoint: $(dockerRegistryEndpoint)
-      - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
-        displayName: "RegEx Match & Replace"
-        inputs:
-          PathToFile: "deployment.yaml"
-          RegEx: BUILDNUMBER
-          ValueToReplace: "$(Build.BuildNumber)"
-      - task: CopyFiles@1
-        displayName: copy kubernetes yaml
-        inputs:
-          contents: "*.yaml"
-          targetFolder: $(Pipeline.Workspace)
-      - task: PublishPipelineArtifact@1
-        inputs:
-          targetPath: '$(Pipeline.Workspace)'
-          artifact: pipeline
+    - task: Docker@1
+      displayName: "Build an image"
+      inputs:
+        command: "Build an image"
+        imageName: $(imageName)
+        dockerFile: Dockerfile
+    - task: Docker@1
+      displayName: "Push an image"
+      inputs:
+        containerregistrytype: "Container Registry"
+        command: "Push an image"
+        imageName: $(imageName)
+        dockerFile: Dockerfile
+        dockerRegistryEndpoint: $(dockerRegistryEndpoint)
+    - task: kasunkodagoda.regex-match-replace.regex-match-replace.RegExMatchReplace@2
+      displayName: "RegEx Match & Replace"
+      inputs:
+        PathToFile: "deployment.yaml"
+        RegEx: BUILDNUMBER
+        ValueToReplace: "$(Build.BuildNumber)"
+    - task: CopyFiles@1
+      displayName: copy kubernetes yaml
+      inputs:
+        contents: "*.yaml"
+        targetFolder: $(Pipeline.Workspace)/artifacts
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Pipeline.Workspace)/artifacts'
+        artifact: pipeline
 
 - stage: Deploy
   dependsOn: Build
