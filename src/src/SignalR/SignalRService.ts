@@ -1,4 +1,4 @@
-﻿import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@aspnet/signalr';
+﻿import { HubConnectionBuilder, HubConnection, HubConnectionState, HttpTransportType, LogLevel } from '@microsoft/signalr';
 
 
 class SignalR {
