@@ -10,7 +10,7 @@ class SignalR {
 
     constructor() {
         this._connection = new HubConnectionBuilder()
-            .withUrl("/chat/backend/chat", { transport: HttpTransportType.WebSockets, logger: LogLevel.Debug, skipNegotiation: true })
+            .withUrl("/chat/backend/chat", { transport: HttpTransportType.WebSockets, logger: LogLevel.Critical, skipNegotiation: true })
             .withAutomaticReconnect()
             .build();
 
