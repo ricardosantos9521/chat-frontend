@@ -1,4 +1,4 @@
-FROM node:carbon as build
+FROM node:latest as build
 WORKDIR /app
 COPY src/package.json ./
 COPY src/yarn.lock ./
