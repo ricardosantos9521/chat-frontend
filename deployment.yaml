@@ -61,7 +61,7 @@ spec:
     - host: ricspt.ddns.net
       http:
         paths:
-          - path: /chat/frontend/(.*)
+          - path: /chat/frontend(/|$)(.*)
             pathType: Prefix
             backend:
               service:
